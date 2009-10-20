@@ -36,7 +36,7 @@ do
   sed -r 's#(^.*")(.*)(".*)#\2#g' > $tmp-movies
 
   # update $tmp-pages if "Next Page" is shown.
-  grep "Next Page" $tmp-html |
+  grep "Next Page" $tmp-html |\
   sed -r -e 's#(^.*"\/)(tags.*)(".*)#'$rchost'/\2#g' >> $tmp-pages
   # remove downloaded uri 
   sed '1d' $tmp-pages > $tmp-tmp

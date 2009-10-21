@@ -15,10 +15,14 @@ dl_dir=$(dirname $0)/movies    # directory where movies saved
 dl_bandwidth=60                # download limit/s in kilobytes
 dl_interval=2                  # delay interval between downloads
 
+# strip html line to tag uri
+function strip(){
+  cat - | sed -r 's#(^.*"\/)(tags.*)(".*)#'$rchost'/\2#g'
+}
+
 
 # pull tag categories
-curl $rchost | grep -E "\/tag" | grep "<li>"       |\
-sed -r -e 's#(^.*"\/)(tags.*)(".*)#'$rchost'/\2#g' > $tmp-pages
+curl $rchost | grep -E "\/tag" | grep "<li>" | strip > $tmp-pages
 
 # create directory for downloading movies
 mkdir -p $dl_dir
@@ -35,12 +39,6 @@ do
   grep "Download"                 |\
   sed -r 's#(^.*")(.*)(".*)#\2#g' > $tmp-movies
 
-  # update $tmp-pages if "Next Page" is shown.
-  grep "Next Page" $tmp-html |\
-  sed -r -e 's#(^.*"\/)(tags.*)(".*)#'$rchost'/\2#g' >> $tmp-pages
-  # remove downloaded uri 
-  sed '1d' $tmp-pages > $tmp-tmp
-  mv $tmp-tmp $tmp-pages
 
   # download operation is here...
   cat $tmp-movies   |\
@@ -50,6 +48,14 @@ do
     wget -c --limit-rate=${dl_bandwidth}k -O $dl_dir/$(basename $movie_uri) $movie_uri 
     sleep $dl_interval
   done
+
+
+  # remove downloaded uri 
+  sed '1d' $tmp-pages > $tmp-tmp
+  mv $tmp-tmp $tmp-pages
+
+  # add onto $tmp-pages if "Next Page" was shown.
+  grep "Next Page" $tmp-html | strip >> $tmp-pages
 
 done
 # Happy ride on Rails ;)

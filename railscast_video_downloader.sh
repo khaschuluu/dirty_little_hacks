@@ -21,8 +21,11 @@ function strip(){
 }
 
 
+# we need get newest podcast each time we start this shell
+curl $rchost > $tmp-pages
+
 # pull tag categories
-curl $rchost | grep -E "\/tag" | grep "<li>" | strip > $tmp-pages
+curl $rchost | grep -E "\/tag" | grep "<li>" | strip >> $tmp-pages
 
 # create directory for downloading movies
 mkdir -p $dl_dir

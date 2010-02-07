@@ -1,7 +1,7 @@
 #!/bin/bash
 # Quantum magazine downloader for lazy learner.
 # Author:  Battur (batturjapan@gmail.com). 2010/02/07
-# Licence: Free software
+# License: Free software
 
 tmp=/tmp/tmp-$$
 
